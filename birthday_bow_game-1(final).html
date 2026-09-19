@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>a little something, for you</title>
+<style>
+  :root{
+    --cream-1: #fdf3ec;
+    --cream-2: #fbe2da;
+    --blush:   #ffb6bd;
+    --heart-1: #ff8fa8;
+    --heart-2: #f8425f;
+    --plum:    #5a2f3a;
+    --plum-soft: #8a5763;
+    --pink-deep-1: #e23f6e;
+    --pink-deep-2: #f0577f;
+    --gold: #f4c66b;
+    --wood: #4a3428;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{
+    margin:0; padding:0; width:100%; height:100%;
+    overflow:hidden; touch-action:none;
+    font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+    background:#1a1214;
+  }
+  #stage{
+    position:relative;
+    width:100vw; height:100vh;
+    overflow:hidden;
+  }
+
+  .scene{
+    position:absolute; inset:0;
+    opacity:0; visibility:hidden;
+    transition: opacity 1.1s ease;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .scene.active{ opacity:1; visibility:visible; pointer-events:auto; }
+  .scene:not(.active){ pointer-events:none; }
+
+  /* ---------- Scene 1 : the bow ---------- */
+  #scene-bow{
+    background:
+      radial-gradient(ellipse 620px 460px at 62% 26%, rgba(255,150,170,.55), rgba(255,150,170,0) 70%),
+      linear-gradient(160deg, var(--cream-1) 0%, var(--cream-2) 100%);
+  }
+  .label{
+    position:absolute;
+    font-style:italic;
+    color: var(--plum-soft);
+    letter-spacing:.04em;
+    font-size:clamp(14px,2.1vw,20px);
+    opacity:0;
+    animation: fadeIn 1.4s ease .3s forwards;
+    text-align:center;
+    width:100%;
+    pointer-events:none;
+  }
+  .label-top{ top:7%; }
+  .label-bottom{ bottom:7%; }
+  @keyframes fadeIn{ to{ opacity:1; } }
+
+  .heart-wrap{
+    position:absolute;
+    left:62%; top:26%;
+    transform:translate(-50%,-50%);
+    width:min(150px,20vw); height:min(150px,20vw);
+    animation: heartFloat 3.2s ease-in-out infinite;
+  }
+  @keyframes heartFloat{
+    0%,100%{ transform:translate(-50%,-50%) translateY(0); }
+    50%{ transform:translate(-50%,-50%) translateY(-10px); }
+  }
+  .heart-shape{
+    position:relative; width:100%; height:100%;
+    filter: drop-shadow(0 10px 26px rgba(230,50,90,.45));
+  }
+  .heart-shape svg{ width:100%; height:100%; overflow:visible; }
+
+  #bowSvg{ position:absolute; inset:0; width:100%; height:100%; touch-action:none; }
+  .bow-path{ fill:none; stroke:var(--wood); stroke-width:5; stroke-linecap:round; }
+  .string-path{ fill:none; stroke:#7a6a5a; stroke-width:1.6; }
+  .arrow-shaft{ stroke:var(--wood); stroke-width:3.2; stroke-linecap:round; }
+  .arrow-head{ fill:var(--heart-2); }
+  .arrow-fletch{ stroke:var(--gold); stroke-width:2.4; stroke-linecap:round; }
+
+  /* ---------- Scene 2 : make a wish / happy birthday ---------- */
+  #scene-wish{
+    background: linear-gradient(155deg, var(--pink-deep-1) 0%, var(--pink-deep-2) 100%);
+    flex-direction:column;
+  }
+  .wish-label{
+    font-style:italic; color:rgba(255,235,238,.85);
+    font-size:clamp(13px,1.9vw,18px);
+    letter-spacing:.05em;
+    opacity:0; animation: fadeIn 1.2s ease .2s forwards;
+  }
+  .headline{
+    margin:14px 0 0 0;
+    font-family: 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+    font-weight:700;
+    font-size:clamp(40px,9vw,96px);
+    color:#fffaf6;
+    text-shadow:0 6px 30px rgba(0,0,0,.18);
+    text-align:center;
+    line-height:1.05;
+    opacity:0; transform:scale(.92);
+    animation: headlineIn 1.1s cubic-bezier(.2,.8,.25,1) 1.1s forwards;
+  }
+  @keyframes headlineIn{ to{ opacity:1; transform:scale(1); } }
+  .rule{
+    width:0; height:2px; margin:18px auto 0;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: ruleIn 1s ease 2.1s forwards;
+  }
+  @keyframes ruleIn{ to{ width:190px; } }
+  .subtitle{
+    margin-top:18px;
+    font-style:italic; color:rgba(255,235,238,.85);
+    font-size:clamp(13px,2vw,19px);
+    opacity:0; animation: fadeIn 1.2s ease 2.5s forwards;
+  }
+  .tap-on{
+    position:absolute; bottom:6%; left:0; right:0; text-align:center;
+    color:rgba(255,235,238,.6); font-style:italic; font-size:13px;
+    opacity:0; animation: fadeIn 1.2s ease 4s forwards; cursor:pointer;
+  }
+
+  /* ---------- Scene 3 : the tree ---------- */
+  #scene-tree{
+    background:
+      radial-gradient(ellipse 700px 520px at 68% 60%, rgba(255,214,200,.65), rgba(255,214,200,0) 70%),
+      linear-gradient(165deg, var(--cream-1) 0%, var(--cream-2) 100%);
+  }
+  .tree-corner-label{
+    position:absolute; left:8%; top:12%;
+    font-style:italic; color:var(--plum-soft);
+    font-size:clamp(13px,1.9vw,18px);
+    opacity:0; animation: fadeIn 1.2s ease .2s forwards;
+  }
+  #treeSvg{ position:absolute; inset:0; width:100%; height:100%; }
+
+  .trunk{ fill:url(#trunkGrad); }
+  .bark-line{ stroke:rgba(40,24,16,.35); stroke-width:1.4; stroke-linecap:round; fill:none; }
+  .ground-shadow{ fill:url(#shadowGrad); opacity:0; transition:opacity 1.4s ease; filter:blur(2.5px); }
+  .ground-shadow.show{ opacity:1; }
+  .foliage-blob{ opacity:0; filter:url(#softBlur); transition:opacity 2s ease; }
+  .foliage-blob.show{ opacity:.38; }
+  .leaf{ opacity:.95; }
+  .bud{ opacity:.95; }
+
+  .branch{
+    fill:none; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .branch.lvl1{ stroke:#4a3428; }
+  .branch.lvl2{ stroke:#6b4f3f; }
+
+  #canopyGroup{ transform-box:view-box; transform-origin:500px 300px; }
+  #canopyGroup.sway{ animation: treeSway 5s ease-in-out infinite; }
+  @keyframes treeSway{
+    0%,100%{ transform:rotate(-1deg); }
+    50%{ transform:rotate(1.1deg); }
+  }
+
+  .blossom{
+    opacity:0; transform-origin:0 0;
+    transform:scale(.15) rotate(var(--rot,0deg));
+    transition: opacity .55s ease, transform .6s cubic-bezier(.25,1.1,.35,1.25);
+    filter:url(#blossomShadow);
+  }
+  .blossom.show{ opacity:1; transform:scale(var(--sc,1)) rotate(var(--rot,0deg)); }
+  .petal{ opacity:.97; }
+  .petal-sheen{ opacity:.55; }
+  .stamen-dot{ opacity:.95; }
+
+  .falling-petal{
+    position:absolute; top:0; left:0; pointer-events:none; will-change:transform,opacity;
+  }
+
+  .script{
+    position:absolute; left:7%; bottom:16%;
+    font-family:'Segoe Script','Brush Script MT','Lucida Handwriting','Apple Chancery',cursive;
+    font-style:italic; font-weight:400;
+    font-size:clamp(28px,5.6vw,54px);
+    color:var(--heart-2);
+    text-shadow:0 3px 14px rgba(200,40,70,.25);
+    opacity:0; transform:translateY(8px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+  .script.reveal{ opacity:1; transform:translateY(0); }
+  .script-sub{
+    position:absolute; left:7%; bottom:11%;
+    font-style:italic; color:var(--plum-soft);
+    font-size:clamp(12px,1.6vw,15px);
+    opacity:0; transition: opacity 1s ease;
+  }
+  .script-sub.reveal{ opacity:1; }
+  #replayBtn{
+    position:absolute; right:6%; bottom:8%;
+    background:transparent; border:1.4px solid var(--plum-soft);
+    color:var(--plum-soft); border-radius:999px;
+    padding:10px 22px; font-family:inherit; font-style:italic;
+    font-size:14px; cursor:pointer; opacity:0;
+    transition: opacity 1s ease, background .25s, color .25s;
+  }
+  #replayBtn.reveal{ opacity:1; }
+  #replayBtn:hover{ background:var(--plum-soft); color:#fff; }
+
+  /* ---------- particles ---------- */
+  .particle{
+    position:absolute; pointer-events:none; will-change:transform,opacity;
+  }
+  .fade-black{
+    position:absolute; inset:0; background:#1a1214; opacity:0;
+    pointer-events:none; z-index:50; transition:opacity .4s ease;
+  }
+  .fade-black.show{ opacity:1; }
+
+  #hitHint{
+    position:absolute; bottom:14%; left:0; right:0; text-align:center;
+    font-style:italic; color:var(--plum-soft); font-size:13px;
+    opacity:0; transition:opacity .4s ease;
+  }
+  #hitHint.show{ opacity:.85; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- SCENE 1: Cupid's bow -->
+  <section id="scene-bow" class="scene active">
+    <p class="label label-top">a little something, for you</p>
+
+    <div class="heart-wrap" id="heartWrap">
+      <div class="heart-shape">
+        <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="heartGrad" cx="35%" cy="28%" r="75%">
+              <stop offset="0%" stop-color="#ffe1e6"/>
+              <stop offset="35%" stop-color="#ff8fa8"/>
+              <stop offset="100%" stop-color="#f8425f"/>
+            </radialGradient>
+          </defs>
+          <path d="M50 84
+                   C 18 60, 2 40, 2 22
+                   C 2 4, 26 -6, 50 18
+                   C 74 -6, 98 4, 98 22
+                   C 98 40, 82 60, 50 84 Z"
+                fill="url(#heartGrad)"/>
+          <ellipse cx="30" cy="24" rx="9" ry="6" fill="rgba(255,255,255,.8)" transform="rotate(-25 30 24)"/>
+        </svg>
+      </div>
+    </div>
+
+    <svg id="bowSvg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid meet"></svg>
+
+    <p class="label label-bottom" id="pullHint">pull &amp; release</p>
+    <p id="hitHint">not quite — try again</p>
+  </section>
+
+  <!-- SCENE 2: make a wish / happy birthday -->
+  <section id="scene-wish" class="scene">
+    <p class="wish-label">make a wish&hellip;</p>
+    <h1 class="headline">happy birthday<br>(any name)</h1>
+    <div class="rule"></div>
+    <p class="subtitle">to someone worth celebrating</p>
+    <p class="tap-on" id="tapOn">tap to continue &rarr;</p>
+  </section>
+
+  <!-- SCENE 3: the tree -->
+  <section id="scene-tree" class="scene">
+    <p class="tree-corner-label">and&hellip; make it count</p>
+    <svg id="treeSvg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="trunkGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#241812"/>
+          <stop offset="38%" stop-color="#5a4032"/>
+          <stop offset="55%" stop-color="#6b4d3c"/>
+          <stop offset="100%" stop-color="#33241a"/>
+        </linearGradient>
+        <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#2a1810" stop-opacity=".38"/>
+          <stop offset="100%" stop-color="#2a1810" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="softBlur" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="16"/>
+        </filter>
+        <filter id="blossomShadow" x="-80%" y="-80%" width="260%" height="260%">
+          <feDropShadow dx="0" dy="1.4" stdDeviation="1.3" flood-color="#7a2740" flood-opacity=".28"/>
+        </filter>
+      </defs>
+    </svg>
+    <h2 class="script">happy birthday (any name)</h2>
+    <p class="script-sub">from someone who's glad you exist</p>
+    <button id="replayBtn">play again ↺</button>
+  </section>
+
+  <div class="fade-black" id="fadeBlack"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ SCENE HELPERS ============ */
+  var scenes = {
+    bow:  document.getElementById('scene-bow'),
+    wish: document.getElementById('scene-wish'),
+    tree: document.getElementById('scene-tree')
+  };
+  function showScene(name){
+    Object.keys(scenes).forEach(function(k){
+      scenes[k].classList.toggle('active', k===name);
+    });
+  }
+
+  var fadeBlack = document.getElementById('fadeBlack');
+
+  /* ============ BOW & ARROW MINI-GAME ============ */
+  var svg = document.getElementById('bowSvg');
+  var NS = "http://www.w3.org/2000/svg";
+
+  // key points in the 800x450 viewBox
+  var restPos   = {x:150, y:340};   // resting nock position (where arrow sits undrawn)
+  var topTip    = {x:150, y:225};
+  var botTip    = {x:150, y:455};
+  var maxPull   = 150;
+
+  var heartWrap = document.getElementById('heartWrap');
+
+  // The heart is positioned with CSS (%-of-viewport), independent of the
+  // bow's 800x450 SVG viewBox. On any screen whose aspect ratio isn't
+  // exactly 800:450 the SVG letterboxes, so a hardcoded SVG-space heart
+  // position drifts away from where the heart actually renders. Instead,
+  // read the heart's real on-screen box every time and convert it into
+  // SVG coordinates, so the hitbox always matches what's visible.
+  function getHeartHit(){
+    var rect = heartWrap.getBoundingClientRect();
+    var center = toSvgPoint(rect.left + rect.width/2, rect.top + rect.height/2);
+    var edge   = toSvgPoint(rect.right, rect.top + rect.height/2);
+    var radius = Math.abs(edge.x - center.x) * 0.9; // slightly inside the visual box
+    return {pos: center, radius: Math.max(radius, 30)};
+  }
+
+  var bowPathEl, stringEl, arrowGroup, shaftEl, headEl, fletchAEl, fletchBEl;
+
+  function buildBow(){
+    // static bow curve (belly bulges to the left)
+    bowPathEl = document.createElementNS(NS,'path');
+    bowPathEl.setAttribute('class','bow-path');
+    bowPathEl.setAttribute('d','M '+topTip.x+','+topTip.y+' Q 78,340 '+botTip.x+','+botTip.y);
+    svg.appendChild(bowPathEl);
+
+    stringEl = document.createElementNS(NS,'path');
+    stringEl.setAttribute('class','string-path');
+    svg.appendChild(stringEl);
+
+    arrowGroup = document.createElementNS(NS,'g');
+    shaftEl = document.createElementNS(NS,'line');
+    shaftEl.setAttribute('class','arrow-shaft');
+    shaftEl.setAttribute('x1','-14'); shaftEl.setAttribute('y1','0');
+    shaftEl.setAttribute('x2','86');  shaftEl.setAttribute('y2','0');
+    headEl = document.createElementNS(NS,'path');
+    headEl.setAttribute('class','arrow-head');
+    headEl.setAttribute('d','M 86,0 L 68,-9 L 68,9 Z');
+    fletchAEl = document.createElementNS(NS,'line');
+    fletchAEl.setAttribute('class','arrow-fletch');
+    fletchAEl.setAttribute('x1','-14'); fletchAEl.setAttribute('y1','0');
+    fletchAEl.setAttribute('x2','-2');  fletchAEl.setAttribute('y2','-9');
+    fletchBEl = document.createElementNS(NS,'line');
+    fletchBEl.setAttribute('class','arrow-fletch');
+    fletchBEl.setAttribute('x1','-14'); fletchBEl.setAttribute('y1','0');
+    fletchBEl.setAttribute('x2','-2');  fletchBEl.setAttribute('y2','9');
+    arrowGroup.appendChild(shaftEl);
+    arrowGroup.appendChild(fletchAEl);
+    arrowGroup.appendChild(fletchBEl);
+    arrowGroup.appendChild(headEl);
+    svg.appendChild(arrowGroup);
+  }
+
+  function defaultDir(){
+    var hit = getHeartHit();
+    return normalize({x:hit.pos.x-restPos.x, y:hit.pos.y-restPos.y});
+  }
+  function normalize(v){
+    var len = Math.sqrt(v.x*v.x+v.y*v.y) || 1;
+    return {x:v.x/len, y:v.y/len};
+  }
+  function angleOf(dir){ return Math.atan2(dir.y,dir.x)*180/Math.PI; }
+
+  function drawNocked(nock){
+    stringEl.setAttribute('d','M '+topTip.x+','+topTip.y+' L '+nock.x+','+nock.y+' L '+botTip.x+','+botTip.y);
+    var dir = (nock.x===restPos.x && nock.y===restPos.y) ? defaultDir() : normalize({x:restPos.x-nock.x,y:restPos.y-nock.y});
+    var ang = angleOf(dir);
+    arrowGroup.setAttribute('transform','translate('+nock.x+','+nock.y+') rotate('+ang+')');
+    return dir;
+  }
+
+  /* ---- pointer -> svg coordinate conversion ---- */
+  function toSvgPoint(clientX, clientY){
+    var pt = svg.createSVGPoint();
+    pt.x = clientX; pt.y = clientY;
+    var ctm = svg.getScreenCTM();
+    if(!ctm) return {x:0,y:0};
+    var loc = pt.matrixTransform(ctm.inverse());
+    return {x:loc.x, y:loc.y};
+  }
+
+  var dragging = false, canShoot = true, flying = false;
+  var currentNock = {x:restPos.x, y:restPos.y};
+  var pullHint = document.getElementById('pullHint');
+  var hitHint = document.getElementById('hitHint');
+
+  function onDown(e){
+    if(!canShoot || flying) return;
+    dragging = true;
+    pullHint.style.opacity = 0;
+    hitHint.classList.remove('show');
+    var p = getEventPoint(e);
+    updateDrag(p);
+  }
+  function onMove(e){
+    if(!dragging) return;
+    e.preventDefault && e.preventDefault();
+    updateDrag(getEventPoint(e));
+  }
+  function onUp(e){
+    if(!dragging) return;
+    dragging = false;
+    release();
+  }
+  function getEventPoint(e){
+    if(e.touches && e.touches.length) return {x:e.touches[0].clientX, y:e.touches[0].clientY};
+    if(e.changedTouches && e.changedTouches.length) return {x:e.changedTouches[0].clientX, y:e.changedTouches[0].clientY};
+    return {x:e.clientX, y:e.clientY};
+  }
+  function updateDrag(p){
+    var svgP = toSvgPoint(p.x, p.y);
+    var v = {x:svgP.x-restPos.x, y:svgP.y-restPos.y};
+    var dist = Math.sqrt(v.x*v.x+v.y*v.y);
+    if(dist > maxPull){ v.x = v.x/dist*maxPull; v.y = v.y/dist*maxPull; }
+    currentNock = {x:restPos.x+v.x, y:restPos.y+v.y};
+    drawNocked(currentNock);
+  }
+
+  svg.addEventListener('pointerdown', onDown);
+  window.addEventListener('pointermove', onMove, {passive:false});
+  window.addEventListener('pointerup', onUp);
+
+  var flyEl, flyDir, flyPos, flySpeed;
+
+  function release(){
+    var pullDist = Math.sqrt(Math.pow(currentNock.x-restPos.x,2)+Math.pow(currentNock.y-restPos.y,2));
+    if(pullDist < 22){
+      // not pulled enough: snap back
+      currentNock = {x:restPos.x,y:restPos.y};
+      drawNocked(currentNock);
+      pullHint.style.opacity = 1;
+      return;
+    }
+    var dir = normalize({x:restPos.x-currentNock.x, y:restPos.y-currentNock.y});
+    flyDir = dir;
+    flyPos = {x:currentNock.x, y:currentNock.y};
+    flySpeed = 7 + (pullDist/maxPull)*13;
+    flying = true;
+    canShoot = false;
+    arrowGroup.style.visibility = 'hidden';
+    stringEl.setAttribute('d','M '+topTip.x+','+topTip.y+' L '+restPos.x+','+restPos.y+' L '+botTip.x+','+botTip.y);
+
+    flyEl = document.createElementNS(NS,'g');
+    var s1=document.createElementNS(NS,'line');
+    s1.setAttribute('class','arrow-shaft'); s1.setAttribute('x1','-14'); s1.setAttribute('y1','0'); s1.setAttribute('x2','86'); s1.setAttribute('y2','0');
+    var h1=document.createElementNS(NS,'path');
+    h1.setAttribute('class','arrow-head'); h1.setAttribute('d','M 86,0 L 68,-9 L 68,9 Z');
+    var f1=document.createElementNS(NS,'line');
+    f1.setAttribute('class','arrow-fletch'); f1.setAttribute('x1','-14'); f1.setAttribute('y1','0'); f1.setAttribute('x2','-2'); f1.setAttribute('y2','-9');
+    var f2=document.createElementNS(NS,'line');
+    f2.setAttribute('class','arrow-fletch'); f2.setAttribute('x1','-14'); f2.setAttribute('y1','0'); f2.setAttribute('x2','-2'); f2.setAttribute('y2','9');
+    flyEl.appendChild(s1); flyEl.appendChild(f1); flyEl.appendChild(f2); flyEl.appendChild(h1);
+    svg.appendChild(flyEl);
+
+    requestAnimationFrame(stepFlight);
+  }
+
+  function stepFlight(){
+    if(!flying) return;
+    flyPos.x += flyDir.x*flySpeed;
+    flyPos.y += flyDir.y*flySpeed;
+    var ang = angleOf(flyDir);
+    flyEl.setAttribute('transform','translate('+flyPos.x+','+flyPos.y+') rotate('+ang+')');
+
+    // check collision at the arrow's tip (local x=86 along its direction),
+    // not its tail, and against the heart's live on-screen hitbox
+    var tipX = flyPos.x + flyDir.x*86, tipY = flyPos.y + flyDir.y*86;
+    var hit = getHeartHit();
+    var dx = tipX-hit.pos.x, dy = tipY-hit.pos.y;
+    if(Math.sqrt(dx*dx+dy*dy) < hit.radius){
+      flying = false;
+      svg.removeChild(flyEl);
+      onHit(hit.pos);
+      return;
+    }
+    if(flyPos.x > 860 || flyPos.x < -60 || flyPos.y > 510 || flyPos.y < -60){
+      flying = false;
+      svg.removeChild(flyEl);
+      onMiss();
+      return;
+    }
+    requestAnimationFrame(stepFlight);
+  }
+
+  function onMiss(){
+    hitHint.classList.add('show');
+    setTimeout(function(){ hitHint.classList.remove('show'); }, 1400);
+    currentNock = {x:restPos.x, y:restPos.y};
+    drawNocked(currentNock);
+    arrowGroup.style.visibility = 'visible';
+    canShoot = true;
+  }
+
+  /* ---- burst particles on hit ---- */
+  function onHit(hitPos){
+    burstAt(hitPos);
+    heartWrap.style.transition = 'transform .4s cubic-bezier(.3,.8,.4,1.4), opacity .5s ease .15s';
+    heartWrap.style.transform = 'translate(-50%,-50%) scale(1.35)';
+    heartWrap.style.opacity = '0';
+
+    setTimeout(function(){
+      fadeBlack.classList.add('show');
+      setTimeout(function(){
+        showScene('wish');
+        fadeBlack.classList.remove('show');
+        // schedule the auto-advance from the moment the wish scene actually
+        // appears, not from page load — a timer fixed to page-load time
+        // would fire at the wrong moment if the player took a while to hit
+        // the heart, or could fire again out of context after a replay.
+        armWishAutoAdvance();
+      }, 420);
+    }, 480);
+  }
+
+  function burstAt(svgPoint){
+    // convert svg-space point to screen pixels for the particle layer
+    var pt = svg.createSVGPoint();
+    pt.x = svgPoint.x; pt.y = svgPoint.y;
+    var screenPt = pt.matrixTransform(svg.getScreenCTM());
+    var stageRect = document.getElementById('stage').getBoundingClientRect();
+    var cx = screenPt.x - stageRect.left, cy = screenPt.y - stageRect.top;
+
+    var glyphs = ['♥','♥','♥','✦','✧'];
+    var colors = ['#ff6b88','#ff9bb0','#f4c66b','#ff4d6d'];
+    for(var i=0;i<16;i++){
+      (function(i){
+        var p = document.createElement('div');
+        p.className = 'particle';
+        p.textContent = glyphs[i % glyphs.length];
+        p.style.left = cx+'px'; p.style.top = cy+'px';
+        p.style.color = colors[i % colors.length];
+        p.style.fontSize = (12+Math.random()*16)+'px';
+        p.style.opacity = '1';
+        p.style.transform = 'translate(-50%,-50%)';
+        document.getElementById('stage').appendChild(p);
+        var ang = Math.random()*Math.PI*2;
+        var dist = 60+Math.random()*140;
+        var tx = Math.cos(ang)*dist, ty = Math.sin(ang)*dist;
+        var start = performance.now();
+        var dur = 700+Math.random()*500;
+        function tick(now){
+          var t = Math.min(1,(now-start)/dur);
+          var ease = 1-Math.pow(1-t,3);
+          p.style.transform = 'translate(calc(-50% + '+(tx*ease)+'px), calc(-50% + '+(ty*ease - 40*t)+'px)) rotate('+(ease*180)+'deg)';
+          p.style.opacity = String(1-t);
+          if(t<1) requestAnimationFrame(tick);
+          else p.remove();
+        }
+        requestAnimationFrame(tick);
+      })(i);
+    }
+  }
+
+  buildBow();
+  drawNocked(restPos);
+
+  /* ============ SCENE 2 -> SCENE 3 advance ============ */
+  var tapOn = document.getElementById('tapOn');
+  var advancedToTree = false;
+  var wishAutoAdvanceTimer = null;
+  function goTree(){
+    if(wishAutoAdvanceTimer){ clearTimeout(wishAutoAdvanceTimer); wishAutoAdvanceTimer = null; }
+    if(advancedToTree) return;
+    advancedToTree = true;
+    buildTree();
+    showScene('tree');
+  }
+  function armWishAutoAdvance(){
+    if(wishAutoAdvanceTimer){ clearTimeout(wishAutoAdvanceTimer); }
+    wishAutoAdvanceTimer = setTimeout(goTree, 6200);
+  }
+  scenes.wish.addEventListener('click', goTree);
+
+  /* ============ SCENE 3: the tree ============ */
+  var treeSvg = document.getElementById('treeSvg');
+  var treeBuilt = false;
+  var scriptEl = document.querySelector('.script');
+  var scriptSubEl = document.querySelector('.script-sub');
+  var replayBtnEl = document.getElementById('replayBtn');
+  var petalTimer = null;
+
+  // classic heart curve: x = 16 sin^3(t), y = 13cos(t) - 5cos(2t) - 2cos(3t) - cos(4t)
+  // t = PI gives the bottom cusp (where the trunk meets the canopy);
+  // t = 0 gives the little notch between the two lobes at the top.
+  var HEART_MIN_Y = -17, HEART_MAX_Y = 11.923247165376026, HEART_MAX_X = 16;
+  function heartRaw(t){
+    return {
+      x: 16*Math.pow(Math.sin(t),3),
+      y: 13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t)
+    };
+  }
+  var canopyCx = 500, canopyBaseY = 300, canopyTopY = 150, canopyHalfW = 190;
+  function heartPointAt(t, scale){
+    var p = heartRaw(t);
+    var norm = (p.y - HEART_MIN_Y) / (HEART_MAX_Y - HEART_MIN_Y); // 0 bottom .. 1 top
+    return {
+      x: canopyCx + (p.x/HEART_MAX_X) * canopyHalfW * scale,
+      y: canopyBaseY - norm * (canopyBaseY - canopyTopY) * scale
+    };
+  }
+
+  function jitter(v, amt){ return v + (Math.random()*2-1)*amt; }
+
+  function makePath(d, cls, strokeWidth){
+    var el = document.createElementNS(NS,'path');
+    el.setAttribute('d', d);
+    el.setAttribute('class', 'branch '+cls);
+    el.setAttribute('stroke-width', strokeWidth);
+    treeSvg.appendChild(el);
+    return el;
+  }
+
+  // animates a path being "grown" by drawing its real length (not a guessed constant)
+  function growPath(el, delay, duration){
+    var len = el.getTotalLength();
+    el.style.strokeDasharray = len;
+    el.style.strokeDashoffset = len;
+    el.getBoundingClientRect(); // force reflow
+    el.style.transition = 'stroke-dashoffset '+duration+'s cubic-bezier(.35,.1,.2,1) '+delay+'s';
+    requestAnimationFrame(function(){
+      el.style.strokeDashoffset = '0';
+    });
+  }
+
+  function makeBlossom(parent, pos, delay, scale, hueIdx){
+    var palette = [
+      {p:'#ff6b88', hi:'#ffe3e8'}, {p:'#ff9bb0', hi:'#fff6f7'},
+      {p:'#f4c66b', hi:'#fff6e0'}, {p:'#ff4d6d', hi:'#ffd6dc'},
+      {p:'#ffc4cf', hi:'#ffffff'}
+    ];
+    var c = palette[hueIdx % palette.length];
+
+    // Positioning lives on an outer, unclassed group using the SVG
+    // presentation attribute. The CSS-animated scale/rotate/opacity lives
+    // on an inner group instead of this one: an SVG element's CSS
+    // `transform` property completely replaces its `transform` attribute
+    // (rather than composing with it), so a translate() attribute and a
+    // CSS transform on the *same* element silently cancel the translate.
+    var outer = document.createElementNS(NS,'g');
+    outer.setAttribute('transform','translate('+pos.x.toFixed(1)+','+pos.y.toFixed(1)+')');
+
+    var g = document.createElementNS(NS,'g');
+    g.setAttribute('class','blossom');
+    g.style.setProperty('--sc', scale.toFixed(2));
+    g.style.setProperty('--rot', Math.round(Math.random()*360)+'deg');
+
+    for(var i=0;i<5;i++){
+      var ang = i*72;
+      var petal = document.createElementNS(NS,'ellipse');
+      petal.setAttribute('class','petal');
+      petal.setAttribute('cx', 0); petal.setAttribute('cy', -6.2);
+      petal.setAttribute('rx', 4.4); petal.setAttribute('ry', 6.4);
+      petal.setAttribute('fill', c.p);
+      petal.setAttribute('transform','rotate('+ang+')');
+      g.appendChild(petal);
+      // small highlight near the petal tip for a touch of shine/depth
+      var sheen = document.createElementNS(NS,'ellipse');
+      sheen.setAttribute('class','petal-sheen');
+      sheen.setAttribute('cx', -1.1); sheen.setAttribute('cy', -8.4);
+      sheen.setAttribute('rx', 1.4); sheen.setAttribute('ry', 2.2);
+      sheen.setAttribute('fill', c.hi);
+      sheen.setAttribute('transform','rotate('+ang+')');
+      g.appendChild(sheen);
+    }
+    // a small cluster of stamen dots reads more like a real flower center
+    // than a single flat circle
+    for(var s=0;s<4;s++){
+      var sAng = s*90 + 20;
+      var dot = document.createElementNS(NS,'circle');
+      dot.setAttribute('class','stamen-dot');
+      dot.setAttribute('cx', Math.cos(sAng*Math.PI/180)*1.6);
+      dot.setAttribute('cy', Math.sin(sAng*Math.PI/180)*1.6);
+      dot.setAttribute('r', 0.75);
+      dot.setAttribute('fill', '#f4c66b');
+      g.appendChild(dot);
+    }
+    var center = document.createElementNS(NS,'circle');
+    center.setAttribute('class','stamen-dot');
+    center.setAttribute('r', 1.5);
+    center.setAttribute('fill', c.hi === '#ffffff' ? '#f4c66b' : c.hi);
+    g.appendChild(center);
+
+    outer.appendChild(g);
+    parent.appendChild(outer);
+    setTimeout(function(){ g.classList.add('show'); }, delay*1000);
+    return delay;
+  }
+
+  // a tiny unopened bud: no petals, just a soft teardrop — scattered
+  // between the full blossoms so the canopy reads as fuller/denser
+  function makeBud(parent, pos, delay, color, scale){
+    var outer = document.createElementNS(NS,'g');
+    outer.setAttribute('transform','translate('+pos.x.toFixed(1)+','+pos.y.toFixed(1)+') rotate('+Math.round(Math.random()*360)+')');
+    var g = document.createElementNS(NS,'g');
+    g.setAttribute('class','blossom');
+    g.style.setProperty('--sc', scale.toFixed(2));
+    g.style.setProperty('--rot','0deg');
+    var bud = document.createElementNS(NS,'path');
+    bud.setAttribute('class','bud');
+    bud.setAttribute('d','M 0,-5.5 C 2.6,-5.5 3.4,-2.4 2.2,0 C 1.2,1.9 -1.2,1.9 -2.2,0 C -3.4,-2.4 -2.6,-5.5 0,-5.5 Z');
+    bud.setAttribute('fill', color);
+    g.appendChild(bud);
+    outer.appendChild(g);
+    parent.appendChild(outer);
+    setTimeout(function(){ g.classList.add('show'); }, delay*1000);
+  }
+
+  // a small simple leaf, tucked among the blossoms for natural color variety
+  function makeLeaf(parent, pos, delay, scale){
+    var outer = document.createElementNS(NS,'g');
+    outer.setAttribute('transform','translate('+pos.x.toFixed(1)+','+pos.y.toFixed(1)+') rotate('+Math.round(Math.random()*360)+')');
+    var g = document.createElementNS(NS,'g');
+    g.setAttribute('class','blossom');
+    g.style.setProperty('--sc', scale.toFixed(2));
+    g.style.setProperty('--rot','0deg');
+    var leaf = document.createElementNS(NS,'path');
+    leaf.setAttribute('class','leaf');
+    leaf.setAttribute('d','M 0,-8 C 5,-6 5,4 0,9 C -5,4 -5,-6 0,-8 Z');
+    leaf.setAttribute('fill', Math.random() < .5 ? '#7fa662' : '#9cb877');
+    var vein = document.createElementNS(NS,'line');
+    vein.setAttribute('x1','0'); vein.setAttribute('y1','-7');
+    vein.setAttribute('x2','0'); vein.setAttribute('y2','8');
+    vein.setAttribute('stroke','rgba(60,80,40,.4)');
+    vein.setAttribute('stroke-width','.6');
+    g.appendChild(leaf);
+    g.appendChild(vein);
+    outer.appendChild(g);
+    parent.appendChild(outer);
+    setTimeout(function(){ g.classList.add('show'); }, delay*1000);
+  }
+
+  // soft, blurred color mass behind the crisp branch/blossom linework —
+  // gives the canopy a sense of volume instead of flowers floating on
+  // bare branches
+  function makeFoliageBlob(parent, pos, r, color, delay){
+    var blob = document.createElementNS(NS,'circle');
+    blob.setAttribute('class','foliage-blob');
+    blob.setAttribute('cx', pos.x.toFixed(1)); blob.setAttribute('cy', pos.y.toFixed(1));
+    blob.setAttribute('r', r);
+    blob.setAttribute('fill', color);
+    blob.style.transitionDelay = delay+'s';
+    parent.appendChild(blob);
+    requestAnimationFrame(function(){ blob.classList.add('show'); });
+  }
+
+  function buildTree(){
+    if(treeBuilt) return;
+    treeBuilt = true;
+
+    // ground shadow
+    var shadow = document.createElementNS(NS,'ellipse');
+    shadow.setAttribute('class','ground-shadow');
+    shadow.setAttribute('cx', canopyCx); shadow.setAttribute('cy', 447);
+    shadow.setAttribute('rx', 62); shadow.setAttribute('ry', 11);
+    treeSvg.appendChild(shadow);
+    requestAnimationFrame(function(){ shadow.classList.add('show'); });
+
+    // tapered trunk, drawn as a filled silhouette rather than a flat stroke,
+    // with a slight natural lean and a root flare where it meets the ground
+    var trunk = document.createElementNS(NS,'path');
+    trunk.setAttribute('class','trunk');
+    trunk.setAttribute('d',
+      'M 478,450 C 480,440 481,428 483,412 C 479,368 479,362 490,322 L 502,318 '+
+      'C 507,360 505,366 511,410 C 514,426 517,438 521,450 Z');
+    trunk.style.opacity = '0';
+    trunk.style.transition = 'opacity .6s ease';
+    treeSvg.appendChild(trunk);
+    requestAnimationFrame(function(){ trunk.style.opacity = '1'; });
+
+    // a thin lighter strip down one edge suggests roundness / light catching the bark
+    var trunkHighlight = document.createElementNS(NS,'path');
+    trunkHighlight.setAttribute('class','bark-line');
+    trunkHighlight.setAttribute('d','M 492,326 C 486,362 486,400 489,444');
+    trunkHighlight.setAttribute('stroke','rgba(255,220,190,.22)');
+    trunkHighlight.setAttribute('stroke-width','2.2');
+    trunkHighlight.style.opacity = '0';
+    trunkHighlight.style.transition = 'opacity .7s ease .5s';
+    treeSvg.appendChild(trunkHighlight);
+    requestAnimationFrame(function(){ trunkHighlight.style.opacity = '1'; });
+
+    for(var b=0;b<4;b++){
+      var by = 336 - b*32 + jitter(0,4);
+      var bark = document.createElementNS(NS,'path');
+      bark.setAttribute('class','bark-line');
+      bark.setAttribute('d','M '+(486+b)+','+by+' Q 500,'+(by+4)+' '+(512-b)+','+(by-3));
+      bark.setAttribute('stroke-width', (1.6 - b*0.15).toFixed(2));
+      bark.style.opacity = '0';
+      bark.style.transition = 'opacity .6s ease '+(0.3+b*0.1)+'s';
+      treeSvg.appendChild(bark);
+      requestAnimationFrame(function(el){ return function(){ el.style.opacity='1'; }; }(bark));
+    }
+
+    // soft blurred color mass behind the branches, giving the canopy volume
+    var foliage = document.createElementNS(NS,'g');
+    treeSvg.appendChild(foliage);
+    var foliageColors = ['#ffb3c1','#ffc9d6','#f7d998','#ff9fb3','#ffd9e0'];
+    var fN = 13;
+    for(var f=0; f<fN; f++){
+      var ft = 0.42 + (f/(fN-1))*(2*Math.PI-0.84);
+      // skip the very center gap so the blob mass follows the heart notch too
+      var fp = heartPointAt(ft, 0.58 + Math.random()*0.24);
+      var fr = 30 + Math.random()*22;
+      makeFoliageBlob(foliage, fp, fr, foliageColors[f % foliageColors.length], 0.55 + f*0.09);
+    }
+
+    var canopy = document.createElementNS(NS,'g');
+    canopy.setAttribute('id','canopyGroup');
+    treeSvg.appendChild(canopy);
+
+    var trunkTop = {x:500, y:302};
+    var gap = 0.45;
+    var N = 5;
+    var ts = [];
+    for(var i=0;i<N;i++){ ts.push(0.30 + i*((Math.PI-gap-0.30)/(N-1))); }
+    for(var j=0;j<N;j++){ ts.push((Math.PI+gap) + j*((2*Math.PI-0.30-(Math.PI+gap))/(N-1))); }
+
+    var maxFinish = 0;
+    var trunkDelay = 0.15, trunkDur = 0.85;
+    var budColors = ['#ff6b88','#ff9bb0','#f4c66b','#ff4d6d','#ffc4cf'];
+
+    ts.forEach(function(t, idx){
+      var inner = heartPointAt(t, 0.58 + Math.random()*0.06);
+      var outer = heartPointAt(t, 0.96 + Math.random()*0.10);
+
+      // level 1: trunk-top -> inner point, gentle bezier bend
+      var mid1 = {x:(trunkTop.x+inner.x)/2 + jitter(0,14), y:(trunkTop.y+inner.y)/2 + jitter(0,10)};
+      var d1 = 'M '+trunkTop.x+','+trunkTop.y+' Q '+mid1.x.toFixed(1)+','+mid1.y.toFixed(1)+' '+inner.x.toFixed(1)+','+inner.y.toFixed(1);
+      var el1 = makePath(d1, 'lvl1', 6.5);
+      var delay1 = trunkDelay + trunkDur*0.55 + idx*0.11;
+      var dur1 = 0.68;
+      growPath(el1, delay1, dur1);
+      var finish1 = delay1+dur1;
+
+      // level 2: inner point -> outer tip, thinner twig
+      var mid2 = {x:(inner.x+outer.x)/2 + jitter(0,10), y:(inner.y+outer.y)/2 + jitter(0,8)};
+      var d2 = 'M '+inner.x.toFixed(1)+','+inner.y.toFixed(1)+' Q '+mid2.x.toFixed(1)+','+mid2.y.toFixed(1)+' '+outer.x.toFixed(1)+','+outer.y.toFixed(1);
+      var el2 = makePath(d2, 'lvl2', 3.2);
+      var delay2 = finish1 - 0.18;
+      var dur2 = 0.5;
+      growPath(el2, delay2, dur2);
+      var finish2 = delay2+dur2;
+
+      // blossoms: a small cluster at the outer tip, one at the inner joint,
+      // plus a scattering of tiny buds and the occasional leaf for fullness
+      // and natural color variety
+      var bDelay1 = makeBlossom(canopy, outer, finish2 - 0.12, 0.85+Math.random()*0.4, idx);
+      makeBlossom(canopy, {x:jitter(outer.x,12), y:jitter(outer.y,10)}, bDelay1+0.08+Math.random()*0.1, 0.55+Math.random()*0.3, idx+2);
+      makeBlossom(canopy, inner, finish1+0.05, 0.6+Math.random()*0.25, idx+1);
+      makeBud(canopy, {x:jitter(outer.x,16), y:jitter(outer.y,14)}, bDelay1+0.15, budColors[idx % budColors.length], 0.7+Math.random()*0.3);
+      makeBud(canopy, {x:jitter(inner.x,14), y:jitter(inner.y,12)}, finish1+0.15, budColors[(idx+1) % budColors.length], 0.6+Math.random()*0.25);
+      if(idx % 2 === 0){
+        makeLeaf(canopy, {x:jitter(outer.x,10), y:jitter(outer.y,8)+6}, bDelay1+0.2, 0.8+Math.random()*0.3);
+      }
+
+      maxFinish = Math.max(maxFinish, finish2 + 0.55);
+
+      // move the level-2 twig into the canopy group so it sways together
+      canopy.appendChild(el2);
+      canopy.appendChild(el1);
+    });
+
+    // let the branches actually render above the trunk
+    treeSvg.appendChild(canopy);
+
+    setTimeout(function(){
+      canopy.classList.add('sway');
+      scriptEl.classList.add('reveal');
+      setTimeout(function(){ scriptSubEl.classList.add('reveal'); }, 350);
+      setTimeout(function(){ replayBtnEl.classList.add('reveal'); }, 900);
+      startPetals();
+    }, maxFinish*1000);
+  }
+
+  /* drifting petals, spawned gently once the tree has bloomed */
+  function startPetals(){
+    stopPetals();
+    var stage = document.getElementById('stage');
+    petalTimer = setInterval(function(){
+      if(!scenes.tree.classList.contains('active')) return;
+      var stageRect = stage.getBoundingClientRect();
+      var startX = stageRect.width*(0.42 + Math.random()*0.35);
+      var startY = stageRect.height*(0.2 + Math.random()*0.18);
+      var p = document.createElement('div');
+      p.className = 'falling-petal';
+      p.textContent = Math.random() < 0.5 ? '❀' : '✿';
+      p.style.color = Math.random() < 0.5 ? '#ff9bb0' : '#f4c66b';
+      p.style.fontSize = (10+Math.random()*8)+'px';
+      p.style.left = startX+'px'; p.style.top = startY+'px';
+      stage.appendChild(p);
+      var driftX = (Math.random()*2-1)*70;
+      var fallY = stageRect.height*0.55 + Math.random()*60;
+      var rot = (Math.random()*2-1)*220;
+      var start = performance.now();
+      var dur = 3200+Math.random()*1600;
+      function tick(now){
+        var t = Math.min(1,(now-start)/dur);
+        var ease = t;
+        var sway = Math.sin(t*Math.PI*3)*18;
+        p.style.transform = 'translate('+(driftX*ease+sway)+'px, '+(fallY*ease)+'px) rotate('+(rot*ease)+'deg)';
+        p.style.opacity = String(t<0.85 ? 1 : (1-(t-0.85)/0.15));
+        if(t<1 && scenes.tree.classList.contains('active')) requestAnimationFrame(tick);
+        else p.remove();
+      }
+      requestAnimationFrame(tick);
+    }, 700);
+  }
+  function stopPetals(){
+    if(petalTimer){ clearInterval(petalTimer); petalTimer = null; }
+    document.querySelectorAll('.falling-petal').forEach(function(p){ p.remove(); });
+  }
+
+  /* ============ REPLAY ============ */
+  document.getElementById('replayBtn').addEventListener('click', function(){
+    fadeBlack.classList.add('show');
+    setTimeout(function(){
+      if(wishAutoAdvanceTimer){ clearTimeout(wishAutoAdvanceTimer); wishAutoAdvanceTimer = null; }
+      stopPetals();
+
+      // reset bow scene
+      heartWrap.style.transition = 'none';
+      heartWrap.style.transform = 'translate(-50%,-50%)';
+      heartWrap.style.opacity = '1';
+      void heartWrap.offsetWidth;
+      heartWrap.style.transition = '';
+
+      currentNock = {x:restPos.x, y:restPos.y};
+      drawNocked(currentNock);
+      arrowGroup.style.visibility = 'visible';
+      canShoot = true; flying = false;
+      pullHint.style.opacity = '';
+      pullHint.style.animation = 'none'; void pullHint.offsetWidth; pullHint.style.animation = '';
+
+      // clear the tree but keep the <defs> (trunk gradient) — it's a
+      // permanent resource, not per-playthrough content
+      Array.prototype.slice.call(treeSvg.children).forEach(function(child){
+        if(child.tagName.toLowerCase() !== 'defs') treeSvg.removeChild(child);
+      });
+      treeBuilt = false;
+      advancedToTree = false;
+      scriptEl.classList.remove('reveal');
+      scriptSubEl.classList.remove('reveal');
+      replayBtnEl.classList.remove('reveal');
+
+      showScene('bow');
+      fadeBlack.classList.remove('show');
+    }, 420);
+  });
+
+})();
+</script>
+</body>
+</html>
